@@ -1,14 +1,14 @@
 {
   "name": "rifas-app",
   "version": "1.0.0",
-  "description": "Aplicación de rifas virtuales",
+  "description": "Aplicacion de rifas virtuales",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
     "dev": "nodemon server/index.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "18.x"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -18,8 +18,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
     "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
-}
-"engines": {
-    "node": "18.x"
 }
