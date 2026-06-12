@@ -154,4 +154,136 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // ==================== VALIDAR PAGO ====================
-router.put('/validar-pago/:boletoId', auth, async
+router.put('/validar-pago/:boletoId', auth, async (req, res) => {
+    try {
+        const { estado } = req.body;
+        
+        const boleto = await Ticket.findById(req.params.boletoId)
+            .populate('rifa');
+        
+        if (!boleto) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Boleto no encontrado'
+            });
+        }
+
+        if (boleto.rifa.creadoPor.toString() !== req.userId) {
+            return res.status(403).json({
+                exito: false,
+                mensaje: 'No tienes permiso para validar este boleto'
+            });
+        }
+
+        boleto.estado = estado;
+        if (estado === 'pagado') {
+            boleto.fechaPago = new Date();
+        }
+        await boleto.save();
+
+        res.json({
+            exito: true,
+            mensaje: 'Boleto marcado como ' + estado,
+            boleto
+        });
+    } catch (error) {
+        res.status(500).json({
+            exito: false,
+            mensaje: 'Error al validar pago',
+            error: error.message
+        });
+    }
+});
+
+// ==================== SORTEAR GANADOR ====================
+router.post('/sortear/:id', auth, async (req, res) => {
+    try {
+        const { numeroLoteria } = req.body;
+        
+        const rifa = await Raffle.findById(req.params.id);
+        
+        if (!rifa) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Rifa no encontrada'
+            });
+        }
+
+        if (rifa.creadoPor.toString() !== req.userId) {
+            return res.status(403).json({
+                exito: false,
+                mensaje: 'No tienes permiso para sortear esta rifa'
+            });
+        }
+
+        const boletoGanador = await Ticket.findOne({
+            rifa: rifa._id,
+            numero: parseInt(numeroLoteria),
+            estado: 'pagado'
+        }).populate('comprador');
+
+        rifa.estado = 'sorteada';
+        rifa.numeroLoteria = numeroLoteria;
+        rifa.fechaSorteo = new Date();
+        
+        if (boletoGanador) {
+            rifa.ganador = boletoGanador.comprador._id;
+        }
+        
+        await rifa.save();
+
+        res.json({
+            exito: true,
+            mensaje: boletoGanador ? 'Tenemos ganador!' : 'El numero no tiene comprador',
+            ganador: boletoGanador ? {
+                nombre: boletoGanador.comprador.nombre,
+                telefono: boletoGanador.comprador.telefono,
+                numeroBoleto: boletoGanador.numero
+            } : null
+        });
+    } catch (error) {
+        res.status(500).json({
+            exito: false,
+            mensaje: 'Error al sortear',
+            error: error.message
+        });
+    }
+});
+
+// ==================== ELIMINAR RIFA ====================
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const rifa = await Raffle.findById(req.params.id);
+        
+        if (!rifa) {
+            return res.status(404).json({
+                exito: false,
+                mensaje: 'Rifa no encontrada'
+            });
+        }
+
+        if (rifa.creadoPor.toString() !== req.userId) {
+            return res.status(403).json({
+                exito: false,
+                mensaje: 'No tienes permiso'
+            });
+        }
+
+        await Ticket.deleteMany({ rifa: rifa._id });
+        await Buyer.deleteMany({ rifa: rifa._id });
+        await Raffle.findByIdAndDelete(rifa._id);
+
+        res.json({
+            exito: true,
+            mensaje: 'Rifa eliminada exitosamente'
+        });
+    } catch (error) {
+        res.status(500).json({
+            exito: false,
+            mensaje: 'Error al eliminar rifa',
+            error: error.message
+        });
+    }
+});
+
+module.exports = router;
