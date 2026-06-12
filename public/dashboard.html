@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel - RifasApp</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎰</text></svg>">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">🎰 RifasApp</a>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <ul class="navbar-menu" id="navMenu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/dashboard" class="btn btn-primary btn-sm">Mi Panel</a></li>
+                <li><a href="/crear-rifa" class="btn btn-secondary btn-sm">+ Crear Rifa</a></li>
+                <li><a href="#" onclick="cerrarSesion()" class="btn btn-outline btn-sm">Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <div class="container" style="padding: 2rem;">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div>
+                <h1 id="userName">¡Hola!</h1>
+                <p style="color: var(--gray);">Administra tus rifas desde aquí</p>
+            </div>
+            <a href="/crear-rifa" class="btn btn-primary btn-lg">+ Crear Nueva Rifa</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon">🎰</div>
+                <div class="stat-value" id="totalRifas">0</div>
+                <div class="stat-label">Rifas Creadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎫</div>
+                <div class="stat-value" id="totalBoletos">0</div>
+                <div class="stat-label">Boletos Vendidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="boletosPagados">0</div>
+                <div class="stat-label">Boletos Pagados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalRecaudado">$0</div>
+                <div class="stat-label">Recaudado</div>
+            </div>
+        </div>
+
+        <!-- Lista de Rifas -->
+        <h2 class="mb-2">Mis Rifas</h2>
+        <div id="rifasContainer">
+            <!-- Se llena dinámicamente -->
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>🎰 RifasApp &copy; 2024</p>
+        </div>
+    </footer>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
